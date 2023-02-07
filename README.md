@@ -18,4 +18,4 @@ python3 main.py
 # Результаты
 В результате выполнения скрипта, мы получим в консоли сводную таблицу с данными по вакансиям, содержащим данные об окладе. Выглядит это подобным образом:
 
-![API-5.png](API-5.png)
+![Image alt](https://github.com/Andrey7777777777/Prikin-te-budushhuju-zarplatu/blob/main/API-5.png)
