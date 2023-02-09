@@ -42,8 +42,9 @@ def get_all_language_vacancies_hh(language):
             response.raise_for_status()
         except requests.exceptions.HTTPError:
             continue
-        page_vacancies = response.json()['items']
-        vacancies_found = response.json()['found']
+        page_payload = response.json()
+        page_vacancies = page_payload['items']
+        vacancies_found = page_payload['found']
         all_vacancies.extend(page_vacancies)
     return all_vacancies, vacancies_found
 
@@ -87,9 +88,6 @@ def get_all_languages_salary(get_all_language_vacancies,
 
 
 def get_all_language_vacancies_sj(language):
-    env = Env()
-    env.read_env()
-    sj_api_key = env.str('SJ_KEY')
     url = 'https://api.superjob.ru/2.0/vacancies'
     page = 0
     next_page = True
@@ -133,25 +131,27 @@ def get_table(title, salary_statistics):
     return table_instance.table
 
 
-
 def main():
-    title_hh = 'HaedHunter Moscow'
-    title_sj = 'SuperJob Moscow'
-    salary_statistics_hh = get_all_languages_salary(
+    title_hh = 'Moscow HaedHunter'
+    title_sj = 'Moscow SuperJob'
+    salary_stats_hh = get_all_languages_salary(
         get_all_language_vacancies_hh,
         predict_rub_salary_hh,
         'RUR', 'from', 'to'
     )
-    salary_statistics_sj = get_all_languages_salary(
+    salary_stats_sj = get_all_languages_salary(
         get_all_language_vacancies_sj,
         predict_rub_salary,
         'rub', 'payment_from', 'payment_to'
     )
-    print(get_table(title_hh, salary_statistics_hh))
+    print(get_table(title_hh, salary_stats_hh))
     print()
-    print(get_table(title_sj, salary_statistics_sj))
+    print(get_table(title_sj, salary_stats_sj))
 
 
 if __name__ == '__main__':
+    env = Env()
+    env.read_env()
+    sj_api_key = env.str('SJ_KEY')
     main()
 
