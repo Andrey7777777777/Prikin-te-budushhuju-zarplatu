@@ -24,7 +24,7 @@ def predict_rub_salary_hh(vacancy, currency, salary_from, salary_to):
         salary_from, salary_to)
 
 
-def get_all_language_vacancies_hh(language):
+def get_all_language_vacancies_hh(language, sj_api_key=None):
     url = 'https://api.hh.ru/vacancies'
     headers = {'User-Agent': 'HH-User-Agent'}
     all_vacancies = []
@@ -72,11 +72,11 @@ def get_all_languages_salary(get_all_language_vacancies,
                              predict_rub_salary,
                              currency,
                              salary_from,
-                             salary_to):
+                             salary_to, sj_api_key=None):
     languages = ['python', 'c', 'c#', 'c++', 'java', 'JavaScript', 'ruby', 'go', '1c']
     all_languages_salary = {}
     for language in languages:
-        vacancies, amount_of_vacancies = get_all_language_vacancies(language)
+        vacancies, amount_of_vacancies = get_all_language_vacancies(language, sj_api_key=sj_api_key)
         all_languages_salary[language] = get_average_language_salaries(
             predict_rub_salary,
             vacancies,
@@ -87,7 +87,7 @@ def get_all_languages_salary(get_all_language_vacancies,
     return all_languages_salary
 
 
-def get_all_language_vacancies_sj(language):
+def get_all_language_vacancies_sj(language, sj_api_key):
     url = 'https://api.superjob.ru/2.0/vacancies'
     page = 0
     next_page = True
@@ -132,8 +132,9 @@ def get_table(title, salary_statistics):
 
 
 def main():
-    title_hh = 'Moscow HaedHunter'
-    title_sj = 'Moscow SuperJob'
+    env = Env()
+    env.read_env()
+    sj_api_key = env.str('SJ_KEY')
     salary_stats_hh = get_all_languages_salary(
         get_all_language_vacancies_hh,
         predict_rub_salary_hh,
@@ -142,16 +143,17 @@ def main():
     salary_stats_sj = get_all_languages_salary(
         get_all_language_vacancies_sj,
         predict_rub_salary,
-        'rub', 'payment_from', 'payment_to'
+        'rub', 'payment_from', 'payment_to',
+        sj_api_key=sj_api_key
     )
-    print(get_table(title_hh, salary_stats_hh))
+    site_name = 'HaedHunter'
+    print(get_table(site_name, salary_stats_hh))
+
     print()
-    print(get_table(title_sj, salary_stats_sj))
+    site_name = 'SuperJob'
+    print(get_table(site_name, salary_stats_sj))
 
 
 if __name__ == '__main__':
-    env = Env()
-    env.read_env()
-    sj_api_key = env.str('SJ_KEY')
     main()
 
